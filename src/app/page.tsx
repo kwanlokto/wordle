@@ -1,9 +1,12 @@
 "use client";
 
+import {
+  get_five_letter_words,
+  is_valid_five_letter_word,
+} from "@/lib/api/five_letter_words";
 import { useEffect, useState } from "react";
 
-import { Letter } from "@/ui/character";
-import { get_five_letter_words } from "@/lib/api/five_letter_words";
+import { Letter } from "@/ui/letter";
 import { get_random_word } from "@/lib/word_generator";
 
 const WORD = "APPLE";
@@ -14,8 +17,16 @@ export default function Home() {
   const [guesses, set_guesses] = useState<string[]>([]);
   const [input, set_input] = useState("");
 
-  const handleGuess = () => {
+  const handle_guess = async () => {
     if (input.length !== 5) return;
+    else if (!(await is_valid_five_letter_word(input))) {
+      alert("Word is not in the system");
+      return;
+    }
+    else if (guesses.includes(input)) {
+      alert("Word already guessed");
+      return;
+    }
     set_guesses([...guesses, input.toUpperCase()]);
     set_input("");
   };
@@ -64,7 +75,7 @@ export default function Home() {
             placeholder="Guess a word"
           />
           <button
-            onClick={handleGuess}
+            onClick={handle_guess}
             className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
           >
             Submit
