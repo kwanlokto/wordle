@@ -7,8 +7,8 @@ const HowToPlay = () => {
       <Head>
         <title>How to Play Wordle</title>
       </Head>
-      <main className="min-h-screen bg-gray-100 p-6 text-gray-800">
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <main className="min-h-screen px-6 text-gray-800 dark:text-gray-100">
+        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-600 rounded-xl shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-4 text-center">
             How to Play Wordle
           </h1>
@@ -23,16 +23,22 @@ const HowToPlay = () => {
               The game will give feedback using colored tiles:
               <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
                 <li>
-                  <span className="font-bold text-green-600">Green</span>:
-                  Letter is correct and in the right position.
+                  <span className="font-bold text-green-600 dark:text-green-400">
+                    Green
+                  </span>
+                  : Letter is correct and in the right position.
                 </li>
                 <li>
-                  <span className="font-bold text-yellow-500">Yellow</span>:
-                  Letter is in the word but in the wrong position.
+                  <span className="font-bold text-yellow-500 dark:text-yellow-400">
+                    Yellow
+                  </span>
+                  : Letter is in the word but in the wrong position.
                 </li>
                 <li>
-                  <span className="font-bold text-gray-400">Gray</span>: Letter
-                  is not in the word.
+                  <span className="font-bold text-gray-500 dark:text-gray-400">
+                    Gray
+                  </span>
+                  : Letter is not in the word.
                 </li>
               </ul>
             </li>
@@ -40,7 +46,7 @@ const HowToPlay = () => {
             <li>Guess the word correctly within six tries to win!</li>
           </ol>
 
-          <p className="mt-6 italic text-center text-sm text-gray-500">
+          <p className="mt-6 italic text-center text-sm text-gray-500 dark:text-gray-400">
             Good luck and have fun!
           </p>
         </div>
