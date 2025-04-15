@@ -1,8 +1,8 @@
 import { axios_get } from "./base";
 
-export const get_five_letter_words = async () => {
+export const get_possible_words = async (word_length: number) => {
   const data = await axios_get("https://api.datamuse.com/words", {
-    sp: "?????", // 5 character words
+    sp: "?".repeat(word_length),
     max: 1000,
     md: "f", // get the frequency metadata
   });
@@ -21,10 +21,9 @@ export const get_five_letter_words = async () => {
   );
 };
 
-export const is_valid_five_letter_word = async (word: string) => {
+export const is_valid_word = async (word: string) => {
   const data = await axios_get("https://api.datamuse.com/words", {
-    sp: word, // 5 character words
-    max: 1,
+    sp: word, // possible word
   });
 
   return data.length > 0 && data[0].word.length === 5;

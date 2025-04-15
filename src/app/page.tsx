@@ -2,9 +2,9 @@
 
 import { ColoredLetter, Letter } from "@/ui/letter";
 import {
-  get_five_letter_words,
-  is_valid_five_letter_word,
-} from "@/lib/api/five_letter_words";
+  get_possible_words,
+  is_valid_word,
+} from "@/lib/api/words";
 import { useEffect, useState } from "react";
 
 import { get_random_word } from "@/lib/word_generator";
@@ -21,14 +21,16 @@ const COLORS = {
 };
 
 export default function Home() {
-  const [five_letter_words, set_five_letter_words] = useState<string[]>([]);
+  const WORD_LENGTH = 5
+  const [possible_words, set_possible_words] = useState<string[]>([]);
   const [word, set_word] = useState<string | null>(null);
   const [guesses, set_guesses] = useState<Guess[]>([]);
   const [input, set_input] = useState("");
+  const [show_modal, set_show_modal] = useState(false); // State to control the modal visibility
 
   const handle_guess = async () => {
-    if (input.length !== 5) return;
-    else if (!(await is_valid_five_letter_word(input))) {
+    if (input.length !== WORD_LENGTH) return;
+    else if (!(await is_valid_word(input))) {
       alert("Word is not in the system");
       return;
     }
@@ -36,20 +38,18 @@ export default function Home() {
       alert("Word already guessed");
       return;
     }
-    set_guesses([...guesses, format_guess(input)]);
+
+    const newGuess = format_guess(input);
+    set_guesses([...guesses, newGuess]);
+
+    // Check if the word is correct
+    if (newGuess.word === word) {
+      set_show_modal(true); // Show congratulations modal
+    }
+
     set_input("");
   };
 
-  /**
-   * Determines the background color class for a guessed letter in a word-guessing game.
-   *
-   * - Returns green if the letter is in the correct position.
-   * - Returns yellow if the letter exists in the word but in the wrong position.
-   * - Returns gray if the letter does not exist in the word.
-   *
-   * @param {string} input - The guessed word (must be the same length as the actual word).
-   * @returns {Guess} A Tailwind CSS background color class representing the letter's correctness.
-   */
   const format_guess = (input: string): Guess => {
     if (word === null) return { letter_list: [], word: "" };
 
@@ -91,14 +91,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const init_five_letter_words = async () => {
-      const local_five_letter_words = await get_five_letter_words();
-      set_five_letter_words(local_five_letter_words);
-      const random_word = "APPLE";
+    const init_possible_words = async () => {
+      const local_possible_words = await get_possible_words(WORD_LENGTH);
+      set_possible_words(local_possible_words);
+      const random_word = get_random_word(local_possible_words); // Change to dynamic word if necessary
       console.log(`WORD: ${random_word}`);
       set_word(random_word);
     };
-    init_five_letter_words();
+    init_possible_words();
   }, []);
 
   return (
@@ -127,7 +127,7 @@ export default function Home() {
             value={input}
             disabled={guesses.length >= 5}
             onChange={(e) => set_input(e.target.value.toUpperCase())}
-            maxLength={5}
+            maxLength={WORD_LENGTH}
             className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
             placeholder="Guess a word"
           />
@@ -139,14 +139,31 @@ export default function Home() {
             <button
               className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
               onClick={() => {
-                set_word(get_random_word(five_letter_words));
+                set_word(get_random_word(possible_words));
                 set_guesses([]);
+                set_show_modal(false); // Reset modal visibility
               }}
             >
               Retry
             </button>
           )}
         </form>
+      )}
+
+      {/* Congratulations Modal */}
+      {show_modal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-black p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold">Congratulations!</h2>
+            <p>You guessed the word correctly!</p>
+            <button
+              className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              onClick={() => set_show_modal(false)} // Hide modal
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
