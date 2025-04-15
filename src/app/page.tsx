@@ -46,7 +46,7 @@ export default function Home() {
         value={input}
         onChange={(e) => set_input(e.target.value.toUpperCase())}
         maxLength={5}
-        className="text-black px-3 py-2 rounded mb-2 w-40 text-center"
+        className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
         placeholder="Guess a word"
       />
       <button
