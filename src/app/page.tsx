@@ -28,19 +28,56 @@ export default function Home() {
     set_input("");
   };
 
-  const get_letter_color = (letter: string, index: number) => {
+  /**
+   * Determines the background color class for a guessed letter in a word-guessing game.
+   *
+   * - Returns green if the letter is in the correct position.
+   * - Returns yellow if the letter exists in the word but in the wrong position.
+   * - Returns gray if the letter does not exist in the word.
+   *
+   * @param {string} guess - The guessed word (must be the same length as the actual word).
+   * @param {number} index - The index of the current letter being evaluated.
+   * @returns {string} A Tailwind CSS background color class representing the letter's correctness.
+   */
+  const get_letter_color = (guess: string, index: number): string => {
     if (word === null) return "";
-    else if (word[index] === letter) return "bg-green-500";
-    else if (word.includes(letter)) return "bg-yellow-400";
-    else return "bg-gray-400";
+
+    const used_idxs: number[] = [];
+    const colors: ("bg-green-500" | "bg-gray-400" | "bg-yellow-400")[] = word
+      .split("")
+      .map((letter, index) => {
+        if (letter === guess[index]) {
+          used_idxs.push(index);
+          return "bg-green-500";
+        }
+        return "bg-gray-400";
+      });
+
+    // Second pass: Check for present but misplaced letters (yellow)
+    guess.split("").forEach((char, i) => {
+      if (colors[i] === "bg-green-500") return;
+
+      word.split("").forEach((w_char, j) => {
+        if (
+          !used_idxs.includes(j) &&
+          char === w_char &&
+          colors[i] !== "bg-yellow-400"
+        ) {
+          colors[i] = "bg-yellow-400";
+          used_idxs.push(j);
+        }
+      });
+    });
+    //
+    const color = colors[index];
+    return color;
   };
 
   useEffect(() => {
     const init_five_letter_words = async () => {
       const local_five_letter_words = await get_five_letter_words();
-      console.log(local_five_letter_words.length);
       set_five_letter_words(local_five_letter_words);
-      const random_word = get_random_word(local_five_letter_words);
+      const random_word = "APPLE";
       console.log(`WORD: ${random_word}`);
       set_word(random_word);
     };
@@ -58,7 +95,7 @@ export default function Home() {
               <Letter
                 key={j}
                 guess={letter}
-                letter_color={get_letter_color(letter, j)}
+                letter_color={get_letter_color(guess, j)}
               />
             ))}
           </div>
