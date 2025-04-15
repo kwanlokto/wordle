@@ -29,6 +29,7 @@ export default function Home() {
   useEffect(() => {
     const init_five_letter_words = async () => {
       const local_five_letter_words = await get_five_letter_words();
+      console.log(local_five_letter_words.length);
       set_five_letter_words(local_five_letter_words);
       set_word(get_random_word(local_five_letter_words));
     };
@@ -41,11 +42,15 @@ export default function Home() {
 
       <div className="space-y-2 mb-4">
         {guesses.map((guess, i) => (
-          <Letter
-            key={i}
-            guess={guess}
-            letter_color={get_letter_color(guess, i)}
-          />
+          <div key={i} className="flex space-x-2">
+            {guess.split("").map((letter, j) => (
+              <Letter
+                key={j}
+                guess={letter}
+                letter_color={get_letter_color(letter, j)}
+              />
+            ))}
+          </div>
         ))}
       </div>
 
