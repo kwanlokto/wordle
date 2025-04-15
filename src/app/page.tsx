@@ -66,7 +66,13 @@ export default function Home() {
       </div>
 
       {word !== null && (
-        <>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault(); // prevent page reload
+            handle_guess(); // call your submit function
+          }}
+          className="flex flex-col items-center"
+        >
           <input
             value={input}
             onChange={(e) => set_input(e.target.value.toUpperCase())}
@@ -80,7 +86,7 @@ export default function Home() {
           >
             Submit
           </button>
-        </>
+        </form>
       )}
     </div>
   );
