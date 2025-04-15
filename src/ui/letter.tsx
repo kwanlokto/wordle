@@ -1,7 +1,4 @@
-export interface Letter {
-  value: string;
-  color: string;
-}
+import { Letter } from "@/interface/word";
 
 interface LetterProps {
   guess: Letter;

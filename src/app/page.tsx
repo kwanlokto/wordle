@@ -1,102 +1,77 @@
 "use client";
 
-import { ColoredLetter, Letter } from "@/ui/letter";
 import {
+  format_guess,
   get_possible_words,
   is_valid_word,
 } from "@/lib/api/words";
 import { useEffect, useState } from "react";
 
+import { AlertModal } from "@/ui/alert_modal";
+import { ColoredLetter } from "@/ui/letter";
+import { Guess } from "@/interface/word";
+import { SuccessModal } from "@/ui/success_modal";
 import { get_random_word } from "@/lib/word_generator";
 
-interface Guess {
-  letter_list: Letter[];
-  word: string;
-}
-
-const COLORS = {
-  GREEN: "bg-green-500",
-  YELLOW: "bg-yellow-400",
-  GREY: "bg-gray-400",
-};
-
 export default function Home() {
-  const WORD_LENGTH = 5
+  const WORD_LENGTH = 5;
   const [possible_words, set_possible_words] = useState<string[]>([]);
   const [word, set_word] = useState<string | null>(null);
   const [guesses, set_guesses] = useState<Guess[]>([]);
   const [input, set_input] = useState("");
-  const [show_modal, set_show_modal] = useState(false); // State to control the modal visibility
 
-  const handle_guess = async () => {
+  const [show_congrats_modal, set_show_congrats_modal] = useState(false);
+  const [show_alert_modal, set_show_alert_modal] = useState(false);
+  const [alert_text, set_alert_text] = useState("");
+
+  /**
+   * Handles the user's word guess in the Wordle-style game.
+   *
+   * - Validates the input word's length.
+   * - Checks if the word exists in the word list using `is_valid_word`.
+   * - Ensures the word hasn't been guessed already.
+   * - Formats the guess and updates the guess history.
+   * - Displays a congratulatory modal if the guess is correct.
+   * - Triggers alert modals for invalid or repeated guesses.
+   * - Resets the input field after processing.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>} A promise that resolves when the guess has been processed.
+   */
+  const handle_guess = async (): Promise<void> => {
     if (input.length !== WORD_LENGTH) return;
     else if (!(await is_valid_word(input))) {
-      alert("Word is not in the system");
+      set_alert_text("Word is not in the system");
+      set_show_alert_modal(true);
       return;
-    }
-    else if (guesses.filter((guess) => guess.word === input).length > 0) {
-      alert("Word already guessed");
+    } else if (guesses.filter((guess) => guess.word === input).length > 0) {
+      set_alert_text("Word already guessed");
+      set_show_alert_modal(true);
       return;
     }
 
-    const newGuess = format_guess(input);
-    set_guesses([...guesses, newGuess]);
+    const new_guess = format_guess(input, word ?? "");
+    set_guesses([...guesses, new_guess]);
 
     // Check if the word is correct
-    if (newGuess.word === word) {
-      set_show_modal(true); // Show congratulations modal
+    if (new_guess.word === word) {
+      set_show_congrats_modal(true); // Show congratulations modal
     }
 
     set_input("");
   };
 
-  const format_guess = (input: string): Guess => {
-    if (word === null) return { letter_list: [], word: "" };
-
-    const used_idxs: number[] = [];
-    const colored_letters: Letter[] = input.split("").map((letter, index) => {
-      if (letter === word[index]) {
-        used_idxs.push(index);
-        return {
-          value: letter,
-          color: COLORS.GREEN,
-        };
-      }
-      return {
-        value: letter,
-        color: COLORS.GREY,
-      };
-    });
-
-    // Second pass: Check for present but misplaced letters (yellow)
-    input.split("").forEach((char, i) => {
-      if (colored_letters[i].color === COLORS.GREEN) return;
-
-      word.split("").forEach((w_char, j) => {
-        if (
-          !used_idxs.includes(j) &&
-          char === w_char &&
-          colored_letters[i].color !== COLORS.YELLOW
-        ) {
-          colored_letters[i].color = COLORS.YELLOW;
-          used_idxs.push(j);
-        }
-      });
-    });
-
-    return {
-      letter_list: colored_letters,
-      word: input,
-    };
-  };
-
   useEffect(() => {
+    /**
+     * Inits all possible words
+     */
     const init_possible_words = async () => {
       const local_possible_words = await get_possible_words(WORD_LENGTH);
       set_possible_words(local_possible_words);
-      const random_word = get_random_word(local_possible_words); // Change to dynamic word if necessary
+      const random_word = get_random_word(local_possible_words);
       console.log(`WORD: ${random_word}`);
-      set_word(random_word);
+      set_word(random_word.toUpperCase());
     };
     init_possible_words();
   }, []);
@@ -131,7 +106,9 @@ export default function Home() {
             className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
             placeholder="Guess a word"
           />
-          {guesses.length < 5 ? (
+          {guesses.length < 5 &&
+          (guesses.length === 0 ||
+            guesses[guesses.length - 1]?.word !== word) ? (
             <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
               Submit
             </button>
@@ -139,9 +116,9 @@ export default function Home() {
             <button
               className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
               onClick={() => {
-                set_word(get_random_word(possible_words));
+                set_word(get_random_word(possible_words).toUpperCase());
                 set_guesses([]);
-                set_show_modal(false); // Reset modal visibility
+                set_show_congrats_modal(false); // Reset modal visibility
               }}
             >
               Retry
@@ -150,21 +127,16 @@ export default function Home() {
         </form>
       )}
 
-      {/* Congratulations Modal */}
-      {show_modal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white text-black p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold">Congratulations!</h2>
-            <p>You guessed the word correctly!</p>
-            <button
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              onClick={() => set_show_modal(false)} // Hide modal
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <SuccessModal
+        show_modal={show_congrats_modal}
+        set_show_modal={set_show_congrats_modal}
+        text="You guessed the word correctly!"
+      />
+      <AlertModal
+        show_modal={show_alert_modal}
+        set_show_modal={set_show_alert_modal}
+        text={alert_text}
+      />
     </div>
   );
 }
