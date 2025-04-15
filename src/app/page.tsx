@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { get_random_word } from "@/lib/word_generator";
 
 interface Guess {
-  word_list: Letter[];
+  letter_list: Letter[];
   word: string;
 }
 
@@ -28,10 +28,10 @@ export default function Home() {
 
   const handle_guess = async () => {
     if (input.length !== 5) return;
-    // else if (!(await is_valid_five_letter_word(input))) {
-    //   alert("Word is not in the system");
-    //   return;
-    // }
+    else if (!(await is_valid_five_letter_word(input))) {
+      alert("Word is not in the system");
+      return;
+    }
     else if (guesses.filter((guess) => guess.word === input).length > 0) {
       alert("Word already guessed");
       return;
@@ -51,7 +51,7 @@ export default function Home() {
    * @returns {Guess} A Tailwind CSS background color class representing the letter's correctness.
    */
   const format_guess = (input: string): Guess => {
-    if (word === null) return { word_list: [], word: "" };
+    if (word === null) return { letter_list: [], word: "" };
 
     const used_idxs: number[] = [];
     const colored_letters: Letter[] = input.split("").map((letter, index) => {
@@ -85,7 +85,7 @@ export default function Home() {
     });
 
     return {
-      word_list: colored_letters,
+      letter_list: colored_letters,
       word: input,
     };
   };
@@ -108,7 +108,7 @@ export default function Home() {
       <div className="space-y-2 mb-4">
         {guesses.map((guess, i) => (
           <div key={i} className="flex space-x-2">
-            {guess.word_list.map((letter, j) => (
+            {guess.letter_list.map((letter, j) => (
               <ColoredLetter key={j} guess={letter} />
             ))}
           </div>
@@ -119,20 +119,33 @@ export default function Home() {
         <form
           onSubmit={(e) => {
             e.preventDefault(); // prevent page reload
-            handle_guess(); // call your submit function
+            if (guesses.length < 5) handle_guess(); // call your submit function
           }}
           className="flex flex-col items-center"
         >
           <input
             value={input}
+            disabled={guesses.length >= 5}
             onChange={(e) => set_input(e.target.value.toUpperCase())}
             maxLength={5}
             className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
             placeholder="Guess a word"
           />
-          <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
-            Submit
-          </button>
+          {guesses.length < 5 ? (
+            <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
+              Submit
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
+              onClick={() => {
+                set_word(get_random_word(five_letter_words));
+                set_guesses([]);
+              }}
+            >
+              Retry
+            </button>
+          )}
         </form>
       )}
     </div>
