@@ -10,16 +10,22 @@ const openai = new OpenAI({
 });
 
 // Make a request to OpenAI API
-export const get_chat_gpt_response = async () => {
+const get_chat_gpt_response = async (message: string): Promise<string> => {
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4.1",
       store: true,
-      messages: [{ role: "user", content: "write a haiku about ai" }],
+      messages: [{ role: "user", content: message }],
     });
 
-    console.log(response.choices[0].message.content);
+    return response.choices[0].message.content ?? "";
   } catch (error) {
     console.error("Error:", error);
+    return "";
   }
+};
+
+export const get_possible_5_letter_words = async () => {
+  const words = await get_chat_gpt_response("Give me all the 5 letter words");
+  return words.split(" ");
 };

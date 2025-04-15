@@ -1,5 +1,6 @@
 "use client";
 
+import { Letter } from "@/ui/character";
 import { useState } from "react";
 
 const WORD = "APPLE";
@@ -26,19 +27,11 @@ export default function Home() {
 
       <div className="space-y-2 mb-4">
         {guesses.map((guess, i) => (
-          <div key={i} className="flex space-x-2">
-            {guess.split("").map((letter, j) => (
-              <div
-                key={j}
-                className={`w-12 h-12 flex items-center justify-center text-xl font-bold rounded ${get_letter_color(
-                  letter,
-                  j
-                )}`}
-              >
-                {letter}
-              </div>
-            ))}
-          </div>
+          <Letter
+            key={i}
+            guess={guess}
+            letter_color={get_letter_color(guess, i)}
+          />
         ))}
       </div>
 
