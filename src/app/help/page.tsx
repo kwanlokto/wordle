@@ -7,7 +7,7 @@ const HowToPlay = () => {
       <Head>
         <title>How to Play Wordle</title>
       </Head>
-      <main className="min-h-screen px-6 text-gray-800 dark:text-gray-100">
+      <main className="px-6 text-gray-800 dark:text-gray-100">
         <div className="max-w-3xl mx-auto bg-white dark:bg-gray-600 rounded-xl shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-4 text-center">
             How to Play Wordle
