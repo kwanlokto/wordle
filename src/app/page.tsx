@@ -14,8 +14,7 @@ import { SuccessModal } from "@/ui/success_modal";
 import { get_random_word } from "@/lib/word_generator";
 
 export default function Home() {
-  const WORD_LENGTH = 5;
-  const [possible_words, set_possible_words] = useState<string[]>([]);
+  const [word_length, set_word_length] = useState(5);
   const [word, set_word] = useState<string | null>(null);
   const [guesses, set_guesses] = useState<Guess[]>([]);
   const [input, set_input] = useState("");
@@ -40,7 +39,7 @@ export default function Home() {
    * @returns {Promise<void>} A promise that resolves when the guess has been processed.
    */
   const handle_guess = async (): Promise<void> => {
-    if (input.length !== WORD_LENGTH) return;
+    if (input.length !== word_length) return;
     else if (!(await is_valid_word(input))) {
       set_alert_text("Word is not in the system");
       set_show_alert_modal(true);
@@ -54,31 +53,46 @@ export default function Home() {
     const new_guess = format_guess(input, word ?? "");
     set_guesses([...guesses, new_guess]);
 
-    // Check if the word is correct
     if (new_guess.word === word) {
-      set_show_congrats_modal(true); // Show congratulations modal
+      set_show_congrats_modal(true);
     }
 
     set_input("");
   };
 
+  const init_game = async (length: number) => {
+    const local_possible_words = await get_possible_words(length);
+    const random_word = get_random_word(local_possible_words);
+    set_word(random_word.toUpperCase());
+    set_guesses([]);
+    set_input("");
+    set_show_congrats_modal(false);
+  };
+
   useEffect(() => {
-    /**
-     * Inits all possible words
-     */
-    const init_possible_words = async () => {
-      const local_possible_words = await get_possible_words(WORD_LENGTH);
-      set_possible_words(local_possible_words);
-      const random_word = get_random_word(local_possible_words);
-      console.log(`WORD: ${random_word}`);
-      set_word(random_word.toUpperCase());
-    };
-    init_possible_words();
-  }, []);
+    init_game(word_length);
+  }, [word_length]);
 
   return (
     <div className="text-white flex flex-col items-center justify-center p-4">
       <h1 className="text-4xl font-bold mb-4">Wordle</h1>
+
+      <div className="flex mb-4 bg-gray-800 p-1 rounded-full space-x-1">
+        {[4, 5, 6].map((len) => (
+          <button
+            key={len}
+            className={`px-4 py-1 rounded-full transition-colors duration-200 text-sm font-medium
+        ${
+          word_length === len
+            ? "bg-blue-500 text-white shadow"
+            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+        }`}
+            onClick={() => set_word_length(len)}
+          >
+            {len}-Letter
+          </button>
+        ))}
+      </div>
 
       <div className="space-y-2 mb-4">
         {guesses.map((guess, i) => (
@@ -93,8 +107,8 @@ export default function Home() {
       {word !== null && (
         <form
           onSubmit={(e) => {
-            e.preventDefault(); // prevent page reload
-            if (guesses.length < 5) handle_guess(); // call your submit function
+            e.preventDefault();
+            if (guesses.length < 5) handle_guess();
           }}
           className="flex flex-col items-center"
         >
@@ -102,9 +116,9 @@ export default function Home() {
             value={input}
             disabled={guesses.length >= 5}
             onChange={(e) => set_input(e.target.value.toUpperCase())}
-            maxLength={WORD_LENGTH}
+            maxLength={word_length}
             className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
-            placeholder="Guess a word"
+            placeholder={`Guess a ${word_length}-letter word`}
           />
           {guesses.length < 5 &&
           (guesses.length === 0 ||
@@ -115,11 +129,7 @@ export default function Home() {
           ) : (
             <button
               className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-              onClick={() => {
-                set_word(get_random_word(possible_words).toUpperCase());
-                set_guesses([]);
-                set_show_congrats_modal(false); // Reset modal visibility
-              }}
+              onClick={() => init_game(word_length)}
             >
               Retry
             </button>
