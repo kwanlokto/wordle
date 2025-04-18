@@ -1,16 +1,17 @@
-import { Letter } from "@/interface/word";
-
 interface LetterProps {
-  guess: Letter;
+  color?: string | null;
+  letter: string;
 }
 
-export const ColoredLetter = ({ guess }: LetterProps) => {
+export const ColoredLetter = ({ color = null, letter }: LetterProps) => {
   return (
     <div className="flex space-x-2">
       <div
-        className={`w-12 h-12 flex items-center justify-center text-xl font-bold rounded ${guess.color}`}
+        className={`w-12 h-12 flex items-center justify-center text-xl font-bold rounded  ${
+          color === null && "border border-gray-400" 
+        } ${color}`}
       >
-        {guess.value}
+        {letter}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { COLORS, Guess, Letter } from "@/interface/word";
 import {
   format_guess,
   get_possible_words,
@@ -9,8 +10,8 @@ import { useEffect, useState } from "react";
 
 import { AlertModal } from "@/ui/alert_modal";
 import { ColoredLetter } from "@/ui/letter";
-import { Guess } from "@/interface/word";
 import { SuccessModal } from "@/ui/success_modal";
+import { WordleKeyboard } from "@/ui/keyboard";
 import { get_random_word } from "@/lib/word_generator";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
   const [word, set_word] = useState<string | null>(null);
   const [guesses, set_guesses] = useState<Guess[]>([]);
   const [input, set_input] = useState("");
+  const [used_keys, set_used_keys] = useState<{ [key: string]: string }>({});
 
   const [show_congrats_modal, set_show_congrats_modal] = useState(false);
   const [show_alert_modal, set_show_alert_modal] = useState(false);
@@ -51,6 +53,21 @@ export default function Home() {
     }
 
     const new_guess = format_guess(input, word ?? "");
+    const local_used_keys = { ...used_keys };
+
+    new_guess.letter_list.forEach((letter: Letter) => {
+      if (local_used_keys[letter.value] !== "correct") {
+        if (letter.color === COLORS.GREEN) {
+          local_used_keys[letter.value] = "correct";
+        } else if (letter.color === COLORS.YELLOW) {
+          local_used_keys[letter.value] = "present";
+        } else {
+          local_used_keys[letter.value] = "absent";
+        }
+      }
+    });
+    set_used_keys(local_used_keys);
+
     set_guesses([...guesses, new_guess]);
 
     if (new_guess.word === word) {
@@ -67,8 +84,15 @@ export default function Home() {
     set_guesses([]);
     set_input("");
     set_show_congrats_modal(false);
+    set_used_keys({})
   };
 
+  const is_complete = () => {
+    return !(
+      guesses.length < word_length + 1 &&
+      (guesses.length === 0 || guesses[guesses.length - 1]?.word !== word)
+    );
+  };
   useEffect(() => {
     init_game(word_length);
   }, [word_length]);
@@ -94,11 +118,15 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-2">
         {guesses.map((guess, i) => (
           <div key={i} className="flex space-x-2">
             {guess.letter_list.map((letter, j) => (
-              <ColoredLetter key={j} guess={letter} />
+              <ColoredLetter
+                key={j}
+                color={letter.color}
+                letter={letter.value}
+              />
             ))}
           </div>
         ))}
@@ -108,32 +136,46 @@ export default function Home() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (guesses.length < 5) handle_guess();
+            if (guesses.length < word_length + 1) {
+              handle_guess();
+            }
           }}
           className="flex flex-col items-center"
         >
-          <input
-            value={input}
-            disabled={guesses.length >= 5}
-            onChange={(e) => set_input(e.target.value.toUpperCase())}
-            maxLength={word_length}
-            className="dark:text-white text-black px-3 py-2 rounded mb-2 w-40 text-center"
-            placeholder={`Guess a ${word_length}-letter word`}
-          />
-          {guesses.length < 5 &&
-          (guesses.length === 0 ||
-            guesses[guesses.length - 1]?.word !== word) ? (
-            <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
-              Submit
-            </button>
-          ) : (
+          <div className="flex space-x-2 mb-8">
+            {Array.from({ length: word_length }).map((_, i) => {
+              const char = input[i] || "";
+              return <ColoredLetter key={i} letter={char} />;
+            })}
+          </div>
+          {is_complete() ? (
             <button
               className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
               onClick={() => init_game(word_length)}
             >
               Retry
             </button>
+          ) : (
+            <input
+              value={input}
+              onChange={(e) => set_input(e.target.value.toUpperCase())}
+              maxLength={word_length}
+              className="dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center"
+              placeholder={`Guess a ${word_length}-letter word`}
+            />
           )}
+
+          <WordleKeyboard
+            on_key_press={(key) => {
+              console.log(key);
+              if (key === "Enter") handle_guess();
+              else if (key === "Back") set_input(input.slice(0, -1));
+              else if (key.length === 1 && input.length < word_length)
+                set_input((prev) => prev + key);
+            }}
+            used_keys={used_keys}
+            disabled={is_complete()}
+          />
         </form>
       )}
 

@@ -1,8 +1,10 @@
+import { COLORS } from "@/interface/word";
 import React from "react";
 
 interface WordleKeyboardProps {
   on_key_press: (key: string) => void;
   used_keys?: { [key: string]: string }; // Optional: track used keys with color status
+  disabled: boolean;
 }
 
 const keyboardRows = [
@@ -14,31 +16,42 @@ const keyboardRows = [
 export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
   on_key_press,
   used_keys = {},
+  disabled,
 }) => {
   return (
-    <div className="space-y-2 mt-4">
+    <div className="space-y-2 mt-4 w-full max-w-md mx-auto">
       {keyboardRows.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center space-x-1">
+        <div key={rowIndex} className="flex justify-center gap-1">
           {row.map((key) => {
             const key_color =
               used_keys[key] === "correct"
-                ? "bg-green-600"
+                ? COLORS.GREEN
                 : used_keys[key] === "present"
-                ? "bg-yellow-500"
+                ? COLORS.YELLOW
                 : used_keys[key] === "absent"
-                ? "bg-gray-600"
-                : "bg-gray-800";
+                ? COLORS.GREY
+                : "bg-gray-700";
 
             const is_special_key = key === "Enter" || key === "Back";
-            const display = key === "Back" ? "⌫" : key;
+            let display = key;
+            if (key === "Back") {
+              display = "⌫";
+            } else if (key === "Enter") {
+              display = "↵";
+            }
 
             return (
               <button
                 key={key}
+                disabled={disabled}
                 onClick={() => on_key_press(key)}
-                className={`text-white rounded px-3 py-2 text-sm font-semibold ${key_color} ${
-                  is_special_key ? "w-16" : "w-10"
-                } hover:brightness-110 active:scale-95 transition`}
+                className={`flex-1 min-w-[10%] sm:min-w-[40px] max-w-[60px] rounded py-3 text-sm sm:text-base font-semibold transition ${
+                  is_special_key ? "flex-[1.5]" : ""
+                } ${key_color} ${
+                  disabled
+                    ? "bg-gray-400 cursor-not-allowed text-gray-200"
+                    : "text-white hover:brightness-110 active:scale-95"
+                }`}
               >
                 {display}
               </button>
