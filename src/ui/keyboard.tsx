@@ -3,7 +3,7 @@ import React from "react";
 
 interface WordleKeyboardProps {
   on_key_press: (key: string) => void;
-  used_keys?: { [key: string]: string }; // Optional: track used keys with color status
+  used_keys?: { [key: string]: string };
   disabled: boolean;
 }
 

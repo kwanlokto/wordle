@@ -9,8 +9,8 @@ export const SuccessModal = ({
   text,
 }: SuccessModalProps) => {
   return show_modal ? (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md z-50">
-      <div className="bg-neutral-900 backdrop-blur-xl border border-neutral-800 text-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 transition-all duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-zinc-900 backdrop-blur-xl text-white rounded-2xl shadow-2xl p-6 w-full max-w-md relative space-y-4">
         <h2 className="text-2xl font-semibold text-center">🎉 Congrats!</h2>
         <p className="text-center text-sm text-gray-200">{text}</p>
         <button
