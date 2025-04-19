@@ -42,6 +42,7 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
 
             return (
               <button
+                type="button"
                 key={key}
                 disabled={disabled}
                 onClick={() => on_key_press(key)}

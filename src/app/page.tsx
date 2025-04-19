@@ -43,7 +43,7 @@ export default function Home() {
   const handle_guess = async (): Promise<void> => {
     if (input.length !== word_length) return;
     else if (!(await is_valid_word(input))) {
-      set_alert_text("Word is not in the system");
+      set_alert_text("Word not found");
       set_show_alert_modal(true);
       return;
     } else if (guesses.filter((guess) => guess.word === input).length > 0) {
@@ -140,7 +140,7 @@ export default function Home() {
               handle_guess();
             }
           }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center w-full"
         >
           <div className="flex space-x-2 mb-8">
             {Array.from({ length: word_length }).map((_, i) => {
@@ -167,7 +167,6 @@ export default function Home() {
 
           <WordleKeyboard
             on_key_press={(key) => {
-              console.log(key);
               if (key === "Enter") handle_guess();
               else if (key === "Back") set_input(input.slice(0, -1));
               else if (key.length === 1 && input.length < word_length)
