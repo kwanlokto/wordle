@@ -84,7 +84,7 @@ export default function Home() {
     set_guesses([]);
     set_input("");
     set_show_congrats_modal(false);
-    set_used_keys({})
+    set_used_keys({});
   };
 
   const is_complete = () => {
@@ -150,10 +150,10 @@ export default function Home() {
           </div>
           {is_complete() ? (
             <button
-              className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
               onClick={() => init_game(word_length)}
+              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
             >
-              Retry
+              Play Again
             </button>
           ) : (
             <input
