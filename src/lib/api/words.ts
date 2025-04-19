@@ -28,7 +28,7 @@ export const is_valid_word = async (word: string) => {
     sp: word, // possible word
   });
 
-  return data.length > 0 && data[0].word.length === 5;
+  return data.length > 0 && data[0].word.toUpperCase() === word.toUpperCase();
 };
 
 /**
