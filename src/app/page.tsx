@@ -56,14 +56,19 @@ export default function Home() {
     const local_used_keys = { ...used_keys };
 
     new_guess.letter_list.forEach((letter: Letter) => {
-      if (local_used_keys[letter.value] !== "correct") {
-        if (letter.color === COLORS.GREEN) {
-          local_used_keys[letter.value] = "correct";
-        } else if (letter.color === COLORS.YELLOW) {
-          local_used_keys[letter.value] = "present";
-        } else {
-          local_used_keys[letter.value] = "absent";
-        }
+      if (letter.color === COLORS.GREEN) {
+        local_used_keys[letter.value] = "correct";
+      } else if (
+        local_used_keys[letter.value] !== "correct" &&
+        letter.color === COLORS.YELLOW
+      ) {
+        local_used_keys[letter.value] = "present";
+      } else if (
+        local_used_keys[letter.value] !== "correct" &&
+        local_used_keys[letter.value] !== "present" &&
+        letter.color === COLORS.GREY
+      ) {
+        local_used_keys[letter.value] = "absent";
       }
     });
     set_used_keys(local_used_keys);
@@ -160,7 +165,7 @@ export default function Home() {
               value={input}
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
-              className="dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center"
+              className="dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
               placeholder={`Guess a ${word_length}-letter word`}
             />
           )}

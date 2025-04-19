@@ -30,7 +30,7 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
                 ? COLORS.YELLOW
                 : used_keys[key] === "absent"
                 ? COLORS.GREY
-                : "bg-gray-700";
+                : "bg-transparent border border-gray-500 text-black dark:text-white";
 
             const is_special_key = key === "Enter" || key === "Back";
             let display = key;
@@ -51,7 +51,7 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
                 } ${key_color} ${
                   disabled
                     ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                    : "text-white hover:brightness-110 active:scale-95"
+                    : "hover:brightness-110 active:scale-95"
                 }`}
               >
                 {display}
