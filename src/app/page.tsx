@@ -106,15 +106,15 @@ export default function Home() {
     <div className="text-white flex flex-col items-center justify-center p-4">
       <h1 className="text-4xl font-bold mb-4">Wordle</h1>
 
-      <div className="flex mb-4 bg-gray-800 p-1 rounded-full space-x-1">
+      <div className="flex mb-4 bg-gray-200 dark:bg-gray-700 p-1 rounded-full space-x-1">
         {[4, 5, 6].map((len) => (
           <button
             key={len}
             className={`px-4 py-1 rounded-full transition-colors duration-200 text-sm font-medium
         ${
           word_length === len
-            ? "bg-blue-500 text-white shadow"
-            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+            ? "bg-gray-500 text-white shadow"
+            : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
         }`}
             onClick={() => set_word_length(len)}
           >
