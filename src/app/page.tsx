@@ -174,7 +174,7 @@ export default function Home() {
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
               className="mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
-              placeholder={`Guess a ${word_length}-letter word`}
+              placeholder={input.length === 0 ? `Guess a ${word_length}-letter word` : ""}
             />
           )}
           <WordleKeyboard
