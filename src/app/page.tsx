@@ -123,20 +123,6 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="space-y-2 mb-2">
-        {guesses.map((guess, i) => (
-          <div key={i} className="flex space-x-2">
-            {guess.letter_list.map((letter, j) => (
-              <ColoredLetter
-                key={j}
-                color={letter.color}
-                letter={letter.value}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-
       {word !== null && (
         <form
           onSubmit={(e) => {
@@ -147,12 +133,34 @@ export default function Home() {
           }}
           className="flex flex-col items-center w-full"
         >
-          <div className="flex space-x-2 mb-8">
-            {Array.from({ length: word_length }).map((_, i) => {
-              const char = input[i] || "";
-              return <ColoredLetter key={i} letter={char} />;
-            })}
-          </div>
+          {guesses.map((guess, i) => (
+            <div key={i} className="flex space-x-2 mb-2">
+              {guess.letter_list.map((letter, j) => (
+                <ColoredLetter
+                  key={j}
+                  color={letter.color}
+                  letter={letter.value}
+                />
+              ))}
+            </div>
+          ))}
+          {!is_complete() && (
+            <div className="flex space-x-2 mb-2">
+              {Array.from({ length: word_length }).map((_, i) => {
+                const char = input[i] || "";
+                return <ColoredLetter key={i} letter={char} />;
+              })}
+            </div>
+          )}
+          {Array.from({ length: word_length - guesses.length }).map((_, i) => {
+            return (
+              <div key={i} className="flex space-x-2 mb-2">
+                {Array.from({ length: word_length }).map((_, j) => {
+                  return <ColoredLetter key={j} letter="" />;
+                })}
+              </div>
+            );
+          })}
           {is_complete() ? (
             <button
               onClick={() => init_game(word_length)}
@@ -165,11 +173,10 @@ export default function Home() {
               value={input}
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
-              className="dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
+              className="mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
               placeholder={`Guess a ${word_length}-letter word`}
             />
           )}
-
           <WordleKeyboard
             on_key_press={(key) => {
               if (key === "Enter") handle_guess();
