@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 const tabs = [
   { label: "Home", href: "/" },
@@ -22,6 +23,7 @@ const NavButton = ({ label, onClick }: NavButtonProps) => (
 );
 
 export const Navbar = () => {
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className="w-full border-b border-gray-700 flex justify-end gap-4 p-4">
       {tabs.map((tab) => (
