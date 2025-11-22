@@ -1,5 +1,6 @@
 "use client";
 
+import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -42,18 +43,65 @@ export const Navbar = () => {
 
       {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-96">
-            <h2 className="text-xl font-bold mb-4">How To Play</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Add your instructions here...
-            </p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div
+            className="bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-100 
+                    rounded-2xl shadow-xl max-w-lg w-full p-8 relative"
+          >
+            {/* Close Button (top-right X) */}
             <button
               onClick={() => setShowModal(false)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="absolute top-3 right-3 text-gray-400 hover:text-white
+                   dark:hover:text-gray-200 transition text-xl"
             >
-              Close
+              ×
             </button>
+
+            {/* Title */}
+            <h1 className="text-2xl font-bold mb-4 text-center">
+              How to Play Wordle
+            </h1>
+
+            {/* Content */}
+            <p className="mb-4">
+              Wordle is a word guessing game where you have six tries to guess a
+              secret five-letter word.
+            </p>
+
+            <ol className="list-decimal list-inside space-y-3">
+              <li>Type a valid five-letter word and press Enter.</li>
+
+              <li>
+                Feedback appears using colored tiles:
+                <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                  <li>
+                    <span className="font-bold text-green-600 dark:text-green-400">
+                      Green
+                    </span>
+                    — Correct letter, correct position.
+                  </li>
+                  <li>
+                    <span className="font-bold text-yellow-500 dark:text-yellow-400">
+                      Yellow
+                    </span>
+                    — Correct letter, wrong position.
+                  </li>
+                  <li>
+                    <span className="font-bold text-gray-600 dark:text-gray-400">
+                      Gray
+                    </span>
+                    — Letter not in the word.
+                  </li>
+                </ul>
+              </li>
+
+              <li>Use the clues to narrow down your guesses.</li>
+              <li>Guess the word within six tries to win!</li>
+            </ol>
+
+            <p className="mt-6 text-center italic text-sm text-gray-500 dark:text-gray-400">
+              Good luck and have fun!
+            </p>
           </div>
         </div>
       )}
