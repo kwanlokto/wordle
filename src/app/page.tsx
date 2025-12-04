@@ -103,7 +103,7 @@ export default function Home() {
   }, [word_length]);
 
   return (
-    <div className="text-white flex flex-col items-center justify-center p-4">
+    <div className="text-white flex flex-col items-center justify-center p-2 sm:p-4">
       <h1 className="text-4xl font-bold mb-4">Wordle</h1>
 
       <div className="flex mb-4 bg-gray-200 dark:bg-gray-700 p-1 rounded-full space-x-1">
@@ -174,7 +174,9 @@ export default function Home() {
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
               className="mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
-              placeholder={input.length === 0 ? `Guess a ${word_length}-letter word` : ""}
+              placeholder={
+                input.length === 0 ? `Guess a ${word_length}-letter word` : ""
+              }
             />
           )}
           <WordleKeyboard
