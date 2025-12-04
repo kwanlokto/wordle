@@ -21,7 +21,12 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
   return (
     <div className="space-y-2 mt-4 w-full max-w-md mx-auto">
       {keyboardRows.map((row, rowIndex) => (
-        <div key={rowIndex} className={`flex justify-center gap-1 ${rowIndex === 1 ? "px-[4.5%]" : ""}`}>
+        <div
+          key={rowIndex}
+          className={`flex justify-center gap-1 ${
+            rowIndex === 1 ? "px-[4.5%]" : ""
+          }`}
+        >
           {row.map((key) => {
             const key_color =
               used_keys[key] === "correct"
