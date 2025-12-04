@@ -21,7 +21,7 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
   return (
     <div className="space-y-2 mt-4 w-full max-w-md mx-auto">
       {keyboardRows.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center gap-1">
+        <div key={rowIndex} className={`flex justify-center gap-1 ${rowIndex === 1 ? "px-[4.5%]" : ""}`}>
           {row.map((key) => {
             const key_color =
               used_keys[key] === "correct"
@@ -36,8 +36,6 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
             let display = key;
             if (key === "Back") {
               display = "⌫";
-            } else if (key === "Enter") {
-              display = "↵";
             }
 
             return (
@@ -46,8 +44,8 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
                 key={key}
                 disabled={disabled}
                 onClick={() => on_key_press(key)}
-                className={`flex-1 min-w-[10%] sm:min-w-[40px] max-w-[60px] rounded py-3 text-sm sm:text-base font-semibold transition ${
-                  is_special_key ? "flex-[1.5]" : ""
+                className={`min-w-[9%] max-w-[80px] rounded py-4 text-sm sm:text-base font-semibold transition ${
+                  is_special_key ? "flex-[1.5]" : "flex-1"
                 } ${key_color} ${
                   disabled
                     ? "bg-gray-400 cursor-not-allowed text-gray-200"
