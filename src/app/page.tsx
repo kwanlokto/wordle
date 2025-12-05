@@ -110,6 +110,27 @@ export default function Home() {
     init_game(word_length);
   }, [word_length]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (is_complete) return; // ignore input if game is complete
+
+      const key = e.key.toUpperCase();
+
+      if (key === "ENTER") {
+        handle_guess();
+      } else if (key === "BACKSPACE") {
+        set_input((prev) => prev.slice(0, -1));
+      } else if (/^[A-Z]$/.test(key) && input.length < word_length) {
+        set_input((prev) => prev + key);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [input, word_length, is_complete, handle_guess]);
   return (
     <div className="text-white flex flex-col items-center justify-center p-2 sm:p-4">
       <h1 className="text-4xl font-bold mb-4">Wordle</h1>
@@ -171,18 +192,6 @@ export default function Home() {
             );
           })}
           <div className="relative w-full flex flex-col items-center space-y-4">
-            {/* Input (hidden on mobile if desired) */}
-            <input
-              value={input}
-              disabled={is_complete}
-              onChange={(e) => set_input(e.target.value.toUpperCase())}
-              maxLength={word_length}
-              className="hidden sm:block mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
-              placeholder={
-                input.length === 0 ? `Guess a ${word_length}-letter word` : ""
-              }
-            />
-
             {/* Keyboard */}
             <WordleKeyboard
               on_key_press={(key) => {
