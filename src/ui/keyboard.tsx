@@ -51,11 +51,11 @@ export const WordleKeyboard: React.FC<WordleKeyboardProps> = ({
                 onClick={() => on_key_press(key)}
                 className={`min-w-[9%] max-w-[80px] rounded py-4 text-sm sm:text-base font-semibold transition ${
                   is_special_key ? "flex-[1.5]" : "flex-1"
-                } ${key_color} ${
+                } ${
                   disabled
-                    ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                    : "hover:brightness-110 active:scale-95"
-                }`}
+                    ? "bg-gray-600 cursor-not-allowed text-gray-500"
+                    : key_color
+                } ${!disabled ? "hover:brightness-110 active:scale-95" : ""}`}
               >
                 {display}
               </button>

@@ -101,7 +101,9 @@ export default function Home() {
 
   const is_complete = useMemo(() => {
     if (!word) return false;
-    return guesses.some((g) => g.word === word) || guesses.length >= word_length;
+    return (
+      guesses.some((g) => g.word === word) || guesses.length >= word_length + 1
+    );
   }, [guesses, word, word_length]);
 
   useEffect(() => {
@@ -168,16 +170,11 @@ export default function Home() {
               </div>
             );
           })}
-          {is_complete ? (
-            <button
-              onClick={() => init_game(word_length)}
-              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
-            >
-              Play Again
-            </button>
-          ) : (
+          <div className="relative w-full flex flex-col items-center space-y-4">
+            {/* Input (hidden on mobile if desired) */}
             <input
               value={input}
+              disabled={is_complete}
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
               className="hidden sm:block mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
@@ -185,17 +182,32 @@ export default function Home() {
                 input.length === 0 ? `Guess a ${word_length}-letter word` : ""
               }
             />
-          )}
-          <WordleKeyboard
-            on_key_press={(key) => {
-              if (key === "Enter") handle_guess();
-              else if (key === "Back") set_input(input.slice(0, -1));
-              else if (key.length === 1 && input.length < word_length)
-                set_input((prev) => prev + key);
-            }}
-            used_keys={used_keys}
-            disabled={is_complete}
-          />
+
+            {/* Keyboard */}
+            <WordleKeyboard
+              on_key_press={(key) => {
+                if (key === "Enter") handle_guess();
+                else if (key === "Back") set_input(input.slice(0, -1));
+                else if (key.length === 1 && input.length < word_length)
+                  set_input((prev) => prev + key);
+              }}
+              used_keys={used_keys}
+              disabled={is_complete}
+            />
+
+            {/* Play Again overlay */}
+            {is_complete && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <button
+                  onClick={() => init_game(word_length)}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700 active:scale-95 transition z-10 pointer-events-auto"
+                  style={{ minWidth: "180px" }}
+                >
+                  Play Again
+                </button>
+              </div>
+            )}
+          </div>
         </form>
       )}
 
