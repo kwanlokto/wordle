@@ -146,6 +146,7 @@ export default function Home() {
                   key={j}
                   color={letter.color}
                   letter={letter.value}
+                  delay={j * 150}
                 />
               ))}
             </div>
