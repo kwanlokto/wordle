@@ -6,7 +6,7 @@ import {
   get_possible_words,
   is_valid_word,
 } from "@/lib/api/words";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AlertModal } from "@/ui/alert_modal";
 import { ColoredLetter } from "@/ui/letter";
@@ -92,12 +92,18 @@ export default function Home() {
     set_used_keys({});
   };
 
-  const is_complete = () => {
-    return !(
-      guesses.length < word_length + 1 &&
-      (guesses.length === 0 || guesses[guesses.length - 1]?.word !== word)
-    );
-  };
+  // const is_complete = () => {
+  //   return !(
+  //     guesses.length < word_length + 1 &&
+  //     (guesses.length === 0 || guesses[guesses.length - 1]?.word !== word)
+  //   );
+  // };
+
+  const is_complete = useMemo(() => {
+    if (!word) return false;
+    return guesses.some((g) => g.word === word) || guesses.length >= word_length;
+  }, [guesses, word, word_length]);
+
   useEffect(() => {
     init_game(word_length);
   }, [word_length]);
@@ -144,7 +150,7 @@ export default function Home() {
               ))}
             </div>
           ))}
-          {!is_complete() && (
+          {!is_complete && (
             <div className="flex space-x-2 mb-2">
               {Array.from({ length: word_length }).map((_, i) => {
                 const char = input[i] || "";
@@ -161,7 +167,7 @@ export default function Home() {
               </div>
             );
           })}
-          {is_complete() ? (
+          {is_complete ? (
             <button
               onClick={() => init_game(word_length)}
               className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
@@ -173,7 +179,7 @@ export default function Home() {
               value={input}
               onChange={(e) => set_input(e.target.value.toUpperCase())}
               maxLength={word_length}
-              className="mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
+              className="hidden sm:block mt-4 dark:text-white text-black px-3 py-2 rounded mb-2 w-50 text-center border border-black dark:border-white"
               placeholder={
                 input.length === 0 ? `Guess a ${word_length}-letter word` : ""
               }
@@ -187,7 +193,7 @@ export default function Home() {
                 set_input((prev) => prev + key);
             }}
             used_keys={used_keys}
-            disabled={is_complete()}
+            disabled={is_complete}
           />
         </form>
       )}
