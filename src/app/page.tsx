@@ -182,7 +182,7 @@ export default function Home() {
   // -------------------------
   return (
     <div className="text-white flex flex-col items-center justify-center p-1 sm:p-4">
-      <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Wordle</h1>
+      <h1 className="text-4xl font-bold mb-2 sm:mb-4">Wordle</h1>
 
       {/* Difficulty Selector */}
       <div className="flex mb-4 bg-gray-200 dark:bg-gray-700 p-1 rounded-full space-x-1">
