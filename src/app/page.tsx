@@ -6,7 +6,7 @@ import {
   get_possible_words,
   is_valid_word,
 } from "@/lib/api/words";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { AlertModal } from "@/ui/alert_modal";
 import { ColoredLetter } from "@/ui/letter";
@@ -40,7 +40,7 @@ export default function Home() {
    * @function
    * @returns {Promise<void>} A promise that resolves when the guess has been processed.
    */
-  const handle_guess = async (): Promise<void> => {
+  const handle_guess = useCallback(async (): Promise<void> => {
     if (input.length !== word_length) return;
     else if (!(await is_valid_word(input))) {
       set_alert_text("Word not found");
@@ -80,7 +80,7 @@ export default function Home() {
     }
 
     set_input("");
-  };
+  }, [guesses, input, used_keys, word, word_length]);
 
   const init_game = async (length: number) => {
     const local_possible_words = await get_possible_words(length);
@@ -131,9 +131,10 @@ export default function Home() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [input, word_length, is_complete, handle_guess]);
+
   return (
-    <div className="text-white flex flex-col items-center justify-center p-2 sm:p-4">
-      <h1 className="text-4xl font-bold mb-4">Wordle</h1>
+    <div className="text-white flex flex-col items-center justify-center p-1 sm:p-4">
+      <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Wordle</h1>
 
       <div className="flex mb-4 bg-gray-200 dark:bg-gray-700 p-1 rounded-full space-x-1">
         {[4, 5, 6].map((len) => (
