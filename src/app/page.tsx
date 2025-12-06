@@ -20,7 +20,7 @@ export default function Home() {
   const [guesses, set_guesses] = useState<Guess[]>([]);
   const [input, set_input] = useState("");
   const [used_keys, set_used_keys] = useState<{ [key: string]: string }>({});
-
+  const [is_complete, set_is_complete] = useState(false);
   const [show_congrats_modal, set_show_congrats_modal] = useState(false);
   const [show_alert_modal, set_show_alert_modal] = useState(false);
   const [alert_text, set_alert_text] = useState("");
@@ -76,7 +76,7 @@ export default function Home() {
     set_guesses([...guesses, new_guess]);
 
     if (new_guess.word === word) {
-      set_show_congrats_modal(true);
+      setTimeout(() => set_show_congrats_modal(true), 1500); // 1.5 seconds
     }
 
     set_input("");
@@ -92,13 +92,6 @@ export default function Home() {
     set_show_congrats_modal(false);
     set_used_keys({});
   };
-
-  const is_complete = useMemo(() => {
-    if (!word) return false;
-    return (
-      guesses.some((g) => g.word === word) || guesses.length >= word_length + 1
-    );
-  }, [guesses, word, word_length]);
 
   useEffect(() => {
     init_game(word_length);
@@ -125,6 +118,14 @@ export default function Home() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [input, word_length, is_complete, handle_guess]);
+
+  useEffect(() => {
+    if (!word) set_is_complete(false);
+    const local_is_complete =
+      guesses.some((g) => g.word === word) || guesses.length >= word_length + 1;
+    if (local_is_complete) setTimeout(() => set_is_complete(true), 1500);
+    else set_is_complete(false);
+  }, [guesses, word, word_length]);
 
   return (
     <div className="text-white flex flex-col items-center justify-center p-1 sm:p-4">
@@ -169,7 +170,7 @@ export default function Home() {
               ))}
             </div>
           ))}
-          {!is_complete && (
+          {(!is_complete || guesses.length < word_length) && (
             <div className="flex space-x-2 mb-2">
               {Array.from({ length: word_length }).map((_, i) => {
                 const char = input[i] || "";
@@ -217,7 +218,10 @@ export default function Home() {
 
       <SuccessModal
         show_modal={show_congrats_modal}
-        set_show_modal={set_show_congrats_modal}
+        set_show_modal={(show_modal) => {
+          set_show_congrats_modal(show_modal);
+          if (!show_modal) init_game(word_length);
+        }}
         text="You guessed the word correctly!"
       />
       <AlertModal
