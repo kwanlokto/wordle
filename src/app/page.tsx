@@ -6,7 +6,7 @@ import {
   get_possible_words,
   is_valid_word,
 } from "@/lib/api/words";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { AlertModal } from "@/ui/alert_modal";
 import { ColoredLetter } from "@/ui/letter";
@@ -170,7 +170,7 @@ export default function Home() {
               ))}
             </div>
           ))}
-          {(!is_complete || guesses.length < word_length) && (
+          {(guesses.length < word_length + 1) && (
             <div className="flex space-x-2 mb-2">
               {Array.from({ length: word_length }).map((_, i) => {
                 const char = input[i] || "";
