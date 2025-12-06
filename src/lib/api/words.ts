@@ -6,17 +6,23 @@ export const get_possible_words = async (word_length: number) => {
   const data = await axios_get("https://api.datamuse.com/words", {
     sp: "?".repeat(word_length),
     max: 1000,
-    md: "f", // get the frequency metadata
+    md: "f", // frequency metadata
   });
-  const words = data.filter(
-    (word: { word: string; score: number; tags: string[] }) => {
-      const freq_tag = word.tags.find((tag) => tag.startsWith("f:"));
-      if (!freq_tag) return false;
 
-      const frequency = parseFloat(freq_tag.split(":")[1]);
-      return frequency > 1;
-    }
-  );
+  const words = data.filter((item: { word: string; tags: string[] }) => {
+    const w = item.word;
+
+    // Only allow single alphabetic words
+    if (!/^[a-zA-Z]+$/.test(w)) return false; // no spaces, hyphens, numbers, etc.
+    if (w.length !== word_length) return false; // Datamuse sometimes returns incorrect lengths
+
+    // Frequency filtering
+    const freq_tag = item.tags.find((tag) => tag.startsWith("f:"));
+    if (!freq_tag) return false;
+
+    const frequency = parseFloat(freq_tag.split(":")[1]);
+    return frequency > 1;
+  });
 
   return words.map(
     (word: { word: string; score: number; tags: string[] }) => word.word
