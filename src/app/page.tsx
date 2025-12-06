@@ -85,19 +85,13 @@ export default function Home() {
   const init_game = async (length: number) => {
     const local_possible_words = await get_possible_words(length);
     const random_word = get_random_word(local_possible_words);
+    console.log(random_word);
     set_word(random_word.toUpperCase());
     set_guesses([]);
     set_input("");
     set_show_congrats_modal(false);
     set_used_keys({});
   };
-
-  // const is_complete = () => {
-  //   return !(
-  //     guesses.length < word_length + 1 &&
-  //     (guesses.length === 0 || guesses[guesses.length - 1]?.word !== word)
-  //   );
-  // };
 
   const is_complete = useMemo(() => {
     if (!word) return false;
