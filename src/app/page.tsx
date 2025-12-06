@@ -8,9 +8,9 @@ import {
 } from "@/lib/api/words";
 import { useCallback, useEffect, useState } from "react";
 
-import { AlertModal } from "@/ui/alert_modal";
+import { AlertNotification } from "@/ui/alert_notification";
 import { ColoredLetter } from "@/ui/letter";
-import { SuccessModal } from "@/ui/success_modal";
+import { CustomModal } from "@/ui/custom_modal";
 import { WordleKeyboard } from "@/ui/keyboard";
 import { get_random_word } from "@/lib/word_generator";
 
@@ -25,6 +25,7 @@ export default function Home() {
   const [used_keys, set_used_keys] = useState<{ [key: string]: string }>({});
   const [is_complete, set_is_complete] = useState(false); // Whether game is finished
   const [show_congrats_modal, set_show_congrats_modal] = useState(false);
+  const [show_try_again_modal, set_show_try_again_modal] = useState(false);
   const [show_alert_modal, set_show_alert_modal] = useState(false);
   const [alert_text, set_alert_text] = useState("");
 
@@ -90,6 +91,12 @@ export default function Home() {
     // Trigger success modal after flip animation
     if (new_guess.word === word) {
       setTimeout(() => set_show_congrats_modal(true), 1500);
+    } else if (guesses.length + 1 >= word_length + 1) {
+      // Reveal word if max attempts reached
+      setTimeout(() => {
+        set_alert_text(`The word was: ${word}`);
+        set_show_alert_modal(true);
+      }, 1500);
     }
 
     // Clear input for next word
@@ -269,16 +276,27 @@ export default function Home() {
       )}
 
       {/* Modals */}
-      <SuccessModal
+      <CustomModal
         show_modal={show_congrats_modal}
         set_show_modal={(show_modal) => {
           set_show_congrats_modal(show_modal);
           if (!show_modal) init_game(word_length);
         }}
+        title="🎉 Congrats!"
         text="You guessed the word correctly!"
       />
 
-      <AlertModal
+      <CustomModal
+        show_modal={show_congrats_modal}
+        set_show_modal={(show_modal) => {
+          set_show_alert_modal(show_modal);
+          if (!show_modal) init_game(word_length);
+        }}
+        title="Sorry Try Again!"
+        text={`The word was: ${word}`}
+      />
+
+      <AlertNotification
         show_modal={show_alert_modal}
         set_show_modal={set_show_alert_modal}
         text={alert_text}

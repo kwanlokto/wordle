@@ -6,7 +6,7 @@ interface AlertModalProps {
   text: string;
 }
 
-export const AlertModal = ({
+export const AlertNotification = ({
   show_modal,
   set_show_modal,
   text,
