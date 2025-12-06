@@ -24,7 +24,7 @@ export const Navbar = () => {
   return (
     <>
       {/* NAVBAR */}
-      <div className="w-full border-b border-gray-700 flex justify-end gap-4 p-4">
+      <div className="w-full border-b border-gray-700 flex justify-end gap-4 py-2 sm:py-4 px-4">
         {tabs.map((tab) =>
           typeof tab.href === "undefined" ? (
             <NavButton
