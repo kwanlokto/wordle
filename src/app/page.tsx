@@ -94,8 +94,7 @@ export default function Home() {
     } else if (guesses.length + 1 >= word_length + 1) {
       // Reveal word if max attempts reached
       setTimeout(() => {
-        set_alert_text(`The word was: ${word}`);
-        set_show_alert_modal(true);
+        set_show_try_again_modal(true);
       }, 1500);
     }
 
@@ -118,6 +117,7 @@ export default function Home() {
     set_guesses([]);
     set_input("");
     set_show_congrats_modal(false);
+    set_show_try_again_modal(false)
     set_used_keys({});
   };
 
@@ -287,9 +287,9 @@ export default function Home() {
       />
 
       <CustomModal
-        show_modal={show_congrats_modal}
+        show_modal={show_try_again_modal}
         set_show_modal={(show_modal) => {
-          set_show_alert_modal(show_modal);
+          set_show_try_again_modal(show_modal);
           if (!show_modal) init_game(word_length);
         }}
         title="Sorry Try Again!"
